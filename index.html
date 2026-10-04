@@ -352,12 +352,16 @@
 
         .polaroid {
             background: white;
-            padding: 12px 12px 20px 12px;
+            padding: 12px 12px 15px 12px;
             border-radius: 10px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
             transform: rotate(-2deg);
             transition: transform 0.3s;
             color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
         }
 
         .polaroid:nth-child(even) {
@@ -382,6 +386,26 @@
             text-align: center;
             margin-top: 10px;
             color: #444;
+            word-break: break-word;
+        }
+
+        .btn-delete-photo {
+            margin-top: 10px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        .btn-delete-photo:hover {
+            background: #e60000;
         }
 
         /* Floating Hearts Animation */
@@ -402,7 +426,7 @@
 
     <!-- Barre de Navigation Header -->
     <header>
-        <div class="logo">Pénélope & Chris ❤️</div>
+        <div class="logo">Pénélope & Christ ❤️</div>
         <div class="nav-actions">
             <!-- Bouton Souvenirs -->
             <button class="btn-nav" id="btn-souvenirs">
@@ -432,7 +456,7 @@
 
     <!-- Hero / Accueil -->
     <section class="hero">
-        <h1>Joyeux Anniversaire ma Pénélope ❤️</h1>
+        <h1>Joyeux Anniversaire ma Pénélope ❤</h1>
         
         <div class="love-letter-card">
             <i class="fa-solid fa-quote-left quote-icon"></i>
@@ -446,12 +470,12 @@
 
     <!-- Compteur d'Amour -->
     <div class="counter-section">
-        <h3>Notre Histoire Continue ✨</h3>
+        <h3>Ensemble depuis le 7 Avril 2026 ✨</h3>
         <div class="timer-grid">
-            <div class="timer-box"><div class="number" id="days">365</div><div class="label">Jours</div></div>
-            <div class="timer-box"><div class="number" id="hours">12</div><div class="label">Heures</div></div>
-            <div class="timer-box"><div class="number" id="minutes">45</div><div class="label">Minutes</div></div>
-            <div class="timer-box"><div class="number" id="seconds">30</div><div class="label">Secondes</div></div>
+            <div class="timer-box"><div class="number" id="days">0</div><div class="label">Jours</div></div>
+            <div class="timer-box"><div class="number" id="hours">0</div><div class="label">Heures</div></div>
+            <div class="timer-box"><div class="number" id="minutes">0</div><div class="label">Minutes</div></div>
+            <div class="timer-box"><div class="number" id="seconds">0</div><div class="label">Secondes</div></div>
         </div>
     </div>
 
@@ -470,7 +494,7 @@
         <div class="gallery-content">
             <span class="close-gallery" id="close-gallery">&times;</span>
             <h2 style="text-align: center; font-family: var(--font-title); font-size: 2.5rem; color: var(--primary-color);">Nos Plus Beaux Souvenirs 📸</h2>
-            <p style="text-align: center; opacity: 0.8; margin-bottom: 15px;">Ajoute de nouvelles photos pour enrichir notre album !</p>
+            <p style="text-align: center; opacity: 0.8; margin-bottom: 15px;">Ajoute ou supprime tes photos à tout moment !</p>
 
             <!-- Zone d'ajout de photos -->
             <div class="upload-section">
@@ -537,7 +561,7 @@
                     const imageData = event.target.result;
                     const caption = photoCaption.value || "Souvenir ❤️";
                     
-                    savePhoto({ image: imageData, caption: caption });
+                    savePhoto({ id: Date.now(), image: imageData, caption: caption });
                     photoCaption.value = '';
                     fileInput.value = '';
                 };
@@ -552,16 +576,22 @@
             loadPhotos();
         }
 
+        function deletePhoto(id) {
+            if (confirm("Veux-tu vraiment supprimer cette photo ?")) {
+                let photos = JSON.parse(localStorage.getItem('penelope_photos') || '[]');
+                photos = photos.filter(p => p.id !== id);
+                localStorage.setItem('penelope_photos', JSON.stringify(photos));
+                loadPhotos();
+            }
+        }
+
         function loadPhotos() {
             galleryGrid.innerHTML = '';
             let photos = JSON.parse(localStorage.getItem('penelope_photos') || '[]');
             
-            // Photo par défaut si vide
             if (photos.length === 0) {
-                photos = [{
-                    image: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=600&auto=format&fit=crop',
-                    caption: 'Pour toujours ensemble ❤️'
-                }];
+                galleryGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; opacity: 0.7;">Aucun souvenir pour le moment. Ajoute votre première photo ci-dessus ! 📸</p>';
+                return;
             }
 
             photos.forEach(p => {
@@ -570,6 +600,9 @@
                 div.innerHTML = `
                     <img src="${p.image}" alt="Souvenir">
                     <div class="caption">${p.caption}</div>
+                    <button class="btn-delete-photo" onclick="deletePhoto(${p.id})">
+                        <i class="fa-solid fa-trash"></i> Supprimer
+                    </button>
                 `;
                 galleryGrid.appendChild(div);
             });
@@ -606,18 +639,28 @@
             alert("Un énorme bisou envoyé à ma Pénélope d'amour ! 💋❤️");
         }
 
-        // Compteur Factice d'amour
+        // Compteur d'amour calculé depuis le 7 Avril 2026
         function updateTimer() {
-            const days = document.getElementById('days');
-            const hours = document.getElementById('hours');
-            const minutes = document.getElementById('minutes');
-            const seconds = document.getElementById('seconds');
+            const daysEl = document.getElementById('days');
+            const hoursEl = document.getElementById('hours');
+            const minutesEl = document.getElementById('minutes');
+            const secondsEl = document.getElementById('seconds');
 
+            const startDate = new Date('2026-04-07T00:00:00');
             const now = new Date();
-            days.innerText = Math.floor((now.getTime() / (1000*60*60*24)) % 365);
-            hours.innerText = now.getHours();
-            minutes.innerText = now.getMinutes();
-            seconds.innerText = now.getSeconds();
+            const diff = now - startDate;
+
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutes = Math.floor((diff / 1000 / 60) % 60);
+                const seconds = Math.floor((diff / 1000) % 60);
+
+                daysEl.innerText = days;
+                hoursEl.innerText = hours;
+                minutesEl.innerText = minutes;
+                secondsEl.innerText = seconds;
+            }
         }
         setInterval(updateTimer, 1000);
         updateTimer();
