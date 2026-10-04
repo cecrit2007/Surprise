@@ -1,9 +1,24 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Joyeux Anniversaire Pénélope ❤️</title>
+
+    <!-- Configuration Application Mobile (Écran d'accueil) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Pénélope & Christ">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#fecfef">
+
+    <!-- Favicon & Icône Écran d'accueil (P rose foncé sur fond rose clair) -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%23fecfef'/><text x='50%25' y='68%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-weight='bold' font-size='320' fill='%23ff4b72'>P</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%23fecfef'/><text x='50%25' y='68%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-weight='bold' font-size='320' fill='%23ff4b72'>P</text></svg>">
+
+    <!-- Manifest Web embarqué pour l'installation -->
+    <link rel="manifest" href="data:application/manifest+json;utf8,{%22name%22:%22P%C3%A9n%C3%A9lope%20%26%20Christ%22,%22short_name%22:%22P%C3%A9n%C3%A9lope%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23fecfef%22,%22theme_color%22:%22%23ff4b72%22,%22icons%22:[{%22src%22:%22data:image/svg%2Bxml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='120' fill='%23fecfef'/><text x='50%25' y='68%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial, sans-serif' font-weight='bold' font-size='320' fill='%23ff4b72'>P</text></svg>%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg%2Bxml%22}]}"/>
+
     <!-- Google Fonts & Font Awesome Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -297,7 +312,7 @@
             background: var(--secondary-color);
         }
 
-        /* Modals Génériques (Galerie, Jeux, Modale Date) */
+        /* Modals Génériques (Galerie, Jeux, Modale Date, Modale Install) */
         .modal {
             display: none;
             position: fixed;
@@ -568,6 +583,33 @@
             0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
             100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
         }
+
+        /* App Install Badge Preview */
+        .app-icon-preview {
+            width: 80px;
+            height: 80px;
+            background: #fecfef;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-size: 3rem;
+            color: #ff4b72;
+            margin: 15px auto;
+            box-shadow: 0 5px 15px rgba(255, 75, 114, 0.3);
+        }
+
+        .install-steps {
+            text-align: left;
+            background: rgba(255,255,255,0.5);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
@@ -576,6 +618,10 @@
     <header>
         <div class="logo">Pénélope & Christ ❤️</div>
         <div class="nav-actions">
+            <!-- Bouton Installer l'App -->
+            <button class="btn-nav" id="btn-install-app">
+                <i class="fa-solid fa-mobile-screen-button"></i> Installer l'app
+            </button>
             <!-- Bouton Souvenirs -->
             <button class="btn-nav" id="btn-souvenirs">
                 <i class="fa-solid fa-camera-retro"></i> Souvenirs
@@ -646,6 +692,32 @@
         </button>
     </div>
 
+    <!-- Modale Installation Sur l'Écran d'Accueil -->
+    <div class="modal" id="install-modal">
+        <div class="modal-content" style="max-width: 500px; text-align: center;">
+            <span class="close-modal" id="close-install">&times;</span>
+            <h2 style="font-family: var(--font-title); font-size: 2.2rem; color: var(--primary-color);">Ajouter à l'écran d'accueil 📱</h2>
+            
+            <div class="app-icon-preview">P</div>
+            
+            <p style="margin-bottom: 10px;">Transforme ce site en une vraie application sur ton téléphone !</p>
+
+            <button class="btn-action" id="btn-auto-install" style="display:none; margin: 15px auto;">
+                <i class="fa-solid fa-download"></i> Installer maintenant
+            </button>
+
+            <div class="install-steps">
+                <strong>Sur iPhone (Safari) :</strong><br>
+                1. Appuie sur le bouton <strong>Partager</strong> <i class="fa-solid fa-share-from-square"></i> en bas de ton écran.<br>
+                2. Fais défiler vers le bas et touche <strong>« Sur l'écran d'accueil »</strong> <i class="fa-solid fa-square-plus"></i>.<br><br>
+
+                <strong>Sur Android (Chrome) :</strong><br>
+                1. Appuie sur les <strong>3 petits points</strong> <i class="fa-solid fa-ellipsis-vertical"></i> en haut à droite.<br>
+                2. Touche <strong>« Ajouter à l'écran d’accueil »</strong> ou <strong>« Installer l'application »</strong>.
+            </div>
+        </div>
+    </div>
+
     <!-- Galerie de Souvenirs (Modal) -->
     <div class="modal" id="gallery-modal">
         <div class="modal-content">
@@ -673,7 +745,6 @@
             <span class="close-modal" id="close-games">&times;</span>
             <h2 style="text-align: center; font-family: var(--font-title); font-size: 2.5rem; color: var(--primary-color);">Espace Jeux 🎮</h2>
             
-            <!-- Choix du Jeu -->
             <div class="games-menu" id="games-selection">
                 <div class="game-card" onclick="openQuiz()">
                     <i class="fa-solid fa-heart-circle-check"></i>
@@ -687,7 +758,6 @@
                 </div>
             </div>
 
-            <!-- Quiz Content -->
             <div id="quiz-section" style="display: none;">
                 <button class="btn-nav" onclick="backToGamesMenu()" style="margin-bottom: 15px;"><i class="fa-solid fa-arrow-left"></i> Retour aux jeux</button>
                 <div class="quiz-container" id="quiz-box">
@@ -702,7 +772,6 @@
                 </div>
             </div>
 
-            <!-- Animal Game Content -->
             <div id="animal-section" style="display: none;">
                 <button class="btn-nav" onclick="backToGamesMenu()" style="margin-bottom: 15px;"><i class="fa-solid fa-arrow-left"></i> Retour aux jeux</button>
                 <h3 style="text-align:center; color: var(--primary-color);">Devine quel animal je suis ! 🦁</h3>
@@ -766,6 +835,38 @@
     </div>
 
     <script>
+        // --- GESTION DE L'INSTALLATION APPLICATION MOBILE ---
+        let deferredPrompt;
+        const btnInstallApp = document.getElementById('btn-install-app');
+        const installModal = document.getElementById('install-modal');
+        const closeInstall = document.getElementById('close-install');
+        const btnAutoInstall = document.getElementById('btn-auto-install');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            btnAutoInstall.style.display = 'block';
+        });
+
+        btnInstallApp.addEventListener('click', () => {
+            installModal.classList.add('active');
+        });
+
+        closeInstall.addEventListener('click', () => {
+            installModal.classList.remove('active');
+        });
+
+        btnAutoInstall.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installModal.classList.remove('active');
+                }
+                deferredPrompt = null;
+            }
+        });
+
         // --- PARAMÈTRES ET THÈMES ---
         const btnSettings = document.getElementById('btn-settings');
         const dropdownMenu = document.getElementById('dropdown-menu');
@@ -979,7 +1080,7 @@
         }
 
         function addChatMessage(txt, isMe) {
-            const box = document.getElementById('chat-box');
+            const box = document.createElement('div');
             const msg = document.createElement('div');
             msg.className = 'chat-msg ' + (isMe ? 'me' : '');
             msg.innerText = txt;
